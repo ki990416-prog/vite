@@ -1,6 +1,7 @@
 import './style.css'
 import { supabase, supabaseReady } from './supabase.js'
 import { searchImages, pixabayReady } from './pixabay.js'
+import { initCart, refreshCart } from './cart.js'
 
 const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
@@ -125,14 +126,15 @@ function renderUser() {
 // ---------- 시작 ----------
 renderTabs()
 renderUser()
+initCart({ getSession: () => session, openAuth })
 if (supabase) {
   supabase.auth.getSession().then(({ data }) => {
-    session = data.session; renderUser(); loadGallery()
+    session = data.session; renderUser(); loadGallery(); refreshCart()
   })
   supabase.auth.onAuthStateChange((_evt, s) => {
     const changed = Boolean(s) !== Boolean(session)
     session = s; renderUser()
-    if (changed) loadGallery()
+    if (changed) { loadGallery(); refreshCart() }
   })
 } else {
   loadGallery()
