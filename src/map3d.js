@@ -130,6 +130,7 @@ const LAYERS = [
   { key: 'lighthouse', name: '등대', color: '#d4a20a' },
   { key: 'wind', name: '풍력발전기', color: '#607d8b' },
   { key: 'hareubang', name: '돌하르방', color: '#795548' },
+  { key: 'api', name: '공공데이터', color: '#6d4fd8' },
 ]
 // islet: 좌표 보정 없이 그대로 배치 / free: 해안선 보정 없음
 const POIS = [
@@ -446,6 +447,36 @@ export function initMap(host) {
     const s = pts3[Math.floor(pts3.length / 2)]
     addMarker('olle', O.name, s.x, s.y, s.z, O.desc)
   }
+
+  // 공공데이터포털(odcloud) 데이터: /api/odcloud 서버리스 함수를 통해 불러온다.
+  // 위도·경도 항목이 있는 행만 제주 범위 안에서 지도에 표시한다.
+  ;(async () => {
+    const note = (t) => { hint.textContent = `${hint.textContent.split(' | ')[0]} | ${t}` }
+    try {
+      const res = await fetch('/api/odcloud?perPage=200')
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const rows = (await res.json()).data
+      if (!Array.isArray(rows) || !rows.length) { note('공공데이터: 데이터 없음'); return }
+      const keys = Object.keys(rows[0])
+      const latK = keys.find((k) => /위도|lat/i.test(k))
+      const lngK = keys.find((k) => /경도|lng|lon/i.test(k))
+      const nameK = keys.find((k) => /명칭|명$|name|title/i.test(k)) || keys.find((k) => typeof rows[0][k] === 'string')
+      if (!latK || !lngK) { note(`공공데이터 ${rows.length}건 수신, 좌표 항목이 없어 표시 불가`); return }
+      let n = 0
+      for (const r of rows) {
+        const lat = parseFloat(r[latK]), lon = parseFloat(r[lngK])
+        if (!(lat > 33.0 && lat < 33.7 && lon > 126.0 && lon < 127.1)) continue
+        const [x, z] = toXZ(lon, lat)
+        const desc = keys.filter((k) => k !== latK && k !== lngK && k !== nameK).slice(0, 4)
+          .map((k) => `${k}: ${r[k]}`).join(' / ') || '공공데이터포털 제공 정보'
+        addMarker('api', String(r[nameK] ?? '공공데이터'), x, groundY(x, z), z, desc, { lon, lat })
+        n++
+      }
+      note(`공공데이터 ${n}건 표시`)
+    } catch (e) {
+      note('공공데이터 API 미연결')
+    }
+  })()
 
   // UI
   const chips = {}
