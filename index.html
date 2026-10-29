@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>제주 — 돌, 바람, 바다의 섬</title>
+  <meta name="description" content="제주도의 풍경을 만나는 곳. 회원가입하고 더 많은 사진을 감상하세요." />
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="#top">濟州 Jeju</a>
+    <nav>
+      <a href="#gallery">갤러리</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <section id="top" class="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-text">
+      <h1>돌, 바람, 바다의 섬 제주</h1>
+      <p>한라산에서 성산일출봉, 협재 해변까지. 제주의 풍경을 모았습니다.</p>
+      <a class="btn" href="#gallery">풍경 보러가기</a>
+    </div>
+  </section>
+
+  <main>
+    <section id="gallery">
+      <h2>제주 갤러리</h2>
+      <p class="sub" id="gallery-sub"></p>
+      <div class="tabs" id="tabs"></div>
+      <div class="grid" id="grid"></div>
+      <p class="credit">사진: <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a></p>
+    </section>
+  </main>
+
+  <dialog id="auth-dialog">
+    <form id="auth-form" method="dialog">
+      <h3 id="auth-title">로그인</h3>
+      <label>이메일<input type="email" name="email" required autocomplete="email" /></label>
+      <label>비밀번호<input type="password" name="password" required minlength="6" autocomplete="current-password" /></label>
+      <p id="auth-msg" class="msg" role="status"></p>
+      <div class="row">
+        <button type="submit" class="btn" id="auth-submit">로그인</button>
+        <button type="button" class="link" id="auth-toggle">회원가입으로 전환</button>
+      </div>
+      <button type="button" class="close" id="auth-close" aria-label="닫기">×</button>
+    </form>
+  </dialog>
+
+  <footer>© Jeju fan site · 비공식 팬 사이트</footer>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
