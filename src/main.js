@@ -3,6 +3,19 @@ import { supabase, supabaseReady } from './supabase.js'
 import { searchImages, pixabayReady } from './pixabay.js'
 import { initCart, refreshCart } from './cart.js'
 
+// 3D 지도는 화면 근처에 왔을 때 불러온다 (three.js 번들 지연 로딩)
+{
+  const host = document.getElementById('map-host')
+  const io = new IntersectionObserver((es) => {
+    if (!es.some((e) => e.isIntersecting)) return
+    io.disconnect()
+    import('./map3d.js')
+      .then((m) => m.initMap(host))
+      .catch((e) => { host.innerHTML = `<p class="msg">3D 지도를 불러오지 못했습니다: ${e.message}</p>` })
+  }, { rootMargin: '400px' })
+  io.observe(host)
+}
+
 const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
 
